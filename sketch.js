@@ -76,7 +76,7 @@ function setLineSettings() {
 
 function draw()
 {
-      background('black')
+      background(options['bgColor']);
 
       if (options['setStart'] == true) {
             stroke('white');
