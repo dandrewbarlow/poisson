@@ -1,4 +1,11 @@
 /**
+ * Andrew Barlow
+ * https://github.com/dandrewbarlow
+ * 
+ * FILE:
+ * Poisson.js
+ * 
+ * DESCRIPTION:
  * Poisson disc-sampling algorithm
  * 
  * inspired by: https://www.youtube.com/watch?v=flQgnCUxHlw
@@ -16,7 +23,7 @@ class Poisson {
             this.size = size;
             this.radius = radius;
 
-            this.cell_size = this.radius / sqrt(2)
+            this.cell_size = this.radius / sqrt(2);
 
             // Poisson grid technically different from pixel grid
             this.grid_size = createVector(
@@ -32,10 +39,10 @@ class Poisson {
 
             this.ordered = [];
 
-            // turns on console logging
+            // ? turns on console logging, slows down runtime
             this.debug = false;
 
-            this.init()
+            this.init();
       }
 
       /**
@@ -53,7 +60,7 @@ class Poisson {
       }
 
       /**
-       * posToGrid translates a vecor position to a grid index
+       * posToGrid translates a vector position to a grid index
        * @param {p5.Vector} pos - vector position of point
        * @returns list of length 2 containing x,y coordinates of the position in the grid
        */
@@ -70,18 +77,10 @@ class Poisson {
        */
       addPoint(pos) {
 
-            // ? this bounds check freezes the program
-            /*
-            if (pos.x < 0 || pos.x > this.size.x || pos.y < 0 || pos.y > this.size.y) {
-                  return;
-            }
-            */
-
             let xy = this.posToGrid(pos);
 
             let x = xy[0];
             let y = xy[1];
-
 
             if (x < 0 || x >= this.grid_size.x || y < 0 || y >= this.grid_size.y) {
                   return;
@@ -95,6 +94,12 @@ class Poisson {
             this.ordered.push(pos);
       }
 
+      /**
+       * generatePointsFromActive() takes a random element from the active list
+       * and tries to find an available point to add. If that fails, the element
+       * is removed from the active list
+       * @returns nothing
+       */
       generatePointsFromActive() {
 
             // random point in active list
@@ -110,7 +115,7 @@ class Poisson {
 
                   // bounds check in real space
                   if (sample.x < 0 || sample.x > this.size.x || sample.y < 0 || sample.y > this.size.y) {
-                        break;
+                        continue;
                   }
 
                   // check neighbors to see if there's room for a new point
@@ -125,8 +130,12 @@ class Poisson {
 
                         for (let j = floor(sample.y/this.cell_size)-1; j < floor(sample.y/this.cell_size)+1; j++) {
 
-                              // bounds check in grid space
-                              if (i < 0 || i >= this.grid_size.x || j < 0 || j >= this.grid_size.y) {
+                              // conditions were getting long
+                              let outOfBounds = i < 0 || i >= this.grid_size.x || j < 0 || j >= this.grid_size.y;
+                              let centerTile = i == floor(sample.x) && j == floor(sample.y);
+
+                              // bounds check in grid space & check if we're on the sample tile
+                              if (outOfBounds || centerTile) {
                                     continue;
                               }
 
